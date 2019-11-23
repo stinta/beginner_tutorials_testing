@@ -1,6 +1,7 @@
 
 # 808X Week10 Submission
 [![Build Status](https://travis-ci.org/stinta/beginner_tutorials_testing.svg?branch=master)](https://travis-ci.org/stinta/beginner_tutorials_testing)
+[![Coverage Status](https://coveralls.io/repos/github/stinta/beginner_tutorials_testing/badge.svg?branch=master)](https://coveralls.io/github/stinta/beginner_tutorials_testing?branch=master)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ## Overview

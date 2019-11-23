@@ -163,6 +163,7 @@ add_dependencies(listener beginner_tutorials_generate_messages_cpp)
 # )
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage") # Enable code coverage
   add_rostest_gtest(allTalkerTests test/allTalkerTests.test test/main.cpp test/testTalker.cpp)
   target_link_libraries(allTalkerTests ${catkin_LIBRARIES})
 
