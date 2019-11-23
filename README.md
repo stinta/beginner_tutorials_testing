@@ -1,6 +1,6 @@
 
 # 808X Week10 Submission
-[![Build Status](https://travis-ci.org/stinta/beginner_tutorials_testing.svg?branch=master)(https://travis-ci.org/stinta/beginner_tutorials_testing)
+[![Build Status](https://travis-ci.org/stinta/beginner_tutorials_testing.svg?branch=master)(https://travis-ci.org/stinta/beginner_tutorials_testing)]
 ## Overview
 The pub/sub assignment where user can provide a command line String argument which will be read from argv and published but the 'talker' ros node and 'listener' ros node subscribes to the message and echoes it.
 
