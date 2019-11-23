@@ -1,3 +1,8 @@
+.. image:: https://travis-ci.com/ros-industrial/industrial_ci.svg?branch=legacy
+    :target: https://travis-ci.com/ros-industrial/industrial_ci
+    :alt: Travis CI status
+
+
 # 808X Week10 Submission
 ## Overview
 The pub/sub assignment where user can provide a command line String argument which will be read from argv and published but the 'talker' ros node and 'listener' ros node subscribes to the message and echoes it.
