@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="beginner_tutorials_testing" type="talker" name="talker" />
+  <test pkg="beginner_tutorials_testing" test-name="allTalkerTests" type="allTalkerTests" />
+</launch>

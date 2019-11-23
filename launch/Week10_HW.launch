@@ -1,0 +1,9 @@
+<launch>
+ <arg name="myArgs" default="None 2.0"/>
+ <arg name="enableRosBag" default="false"/>
+ <node pkg="beginner_tutorials_testing" name="talker" type="talker" launch-prefix="xterm -e" args="$(arg myArgs)">
+ </node>
+ <node pkg="beginner_tutorials_testing" name="listener" type="listener" launch-prefix="xterm -e"/>
+ <node pkg="rosbag" name="rosbag" type="record" args="-a -O $(find beginner_tutorials_testing)/results/record.bag" if="$(arg enableRosBag)" />
+</launch>
+
