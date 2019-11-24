@@ -5,20 +5,28 @@ services:
 env:
   matrix:
     - ROS_DISTRO="kinetic"
+    - ROS_CI_COVERAGE=true USE_DEB=true ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu AFTER_SCRIPT='source /root/catkin_ws/devel/setup.bash && cd /root/catkin_ws/build/ros_ci && make coveralls'
 
 before_install:
   - sudo apt-get install -y lcov
 
 install:
-  - gem install coveralls-lcov
+#  - gem install coveralls-lcov
   - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci
   #- gem install coveralls-lcov
+
+before_script:
+  - echo ROS_CI_COVERAGE >> .ci_config/industrial_ci/src/docker.env
+  - echo COVERALLS_REPO_TOKEN >> .ci_config/industrial_ci/src/docker.env
+  - echo TRAVIS_JOB_ID >> .ci_config/industrial_ci/src/docker.env
+
 script:
+  - source .ci_config/travis.sh
   - .industrial_ci/travis.sh
-after_success:
-  - cd ~/catkin_ws/build
-  - lcov --directory . --capture --output-file coverage.info
-  - lcov --remove coverage.info '/opt/*' '/usr/*'  --output-file coverage.info
-  - lcov --list coverage.info
-  - coveralls-lcov  coverage.info
+#after_success:
+#  - cd ~/catkin_ws/build
+#  - lcov --directory . --capture --output-file coverage.info
+#  - lcov --remove coverage.info '/opt/*' '/usr/*'  --output-file coverage.info
+#  - lcov --list coverage.info
+#  - coveralls-lcov  coverage.info
   #- coveralls-lcov --repo-token ${COVERALLS_REPO_TOKEN} coverage.info
