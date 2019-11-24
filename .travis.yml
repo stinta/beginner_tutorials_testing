@@ -1,32 +1,66 @@
+# General setup
+# -------------
 language: generic
-services:
-  - docker
-
-env:
-  matrix:
-    - ROS_DISTRO="kinetic"
-    - ROS_CI_COVERAGE=true USE_DEB=true ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu AFTER_SCRIPT='source /root/catkin_ws/devel/setup.bash && cd /root/catkin_ws/build/ros_ci && make coveralls'
-
-before_install:
-  - sudo apt-get install -y lcov
-
+# Allow caching of debian (apt-get) packages. This means they're cached
+# on Travis, so we still have to download/install them, but it will be
+# faster than going to the ubuntu repositories.
+cache: apt
+# Before anything, see if we can get the mongoDB troubles out of the way.
+# Note that this is a Travis-CI specific problem; this is not needed in
+# general.
+before_install: # Use this to prepare the system to install prerequisites or dependencies
+    # Define some config vars
+    #- apt-get install doxygen
+    - export ROS_DISTRO=kinetic
+    # Settings to make installing script more general.
+    - export ROS_CI_DESKTOP=`lsb_release -cs`  # e.g. 'precise'
+# Commands to install dependencies
+# --------------------------------
 install:
-#  - gem install coveralls-lcov
-  - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci
-  #- gem install coveralls-lcov
+    # Install ROS
+    - sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+    - apt-get update -qq
+    - apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin ros-$ROS_DISTRO-ros lcov python-catkin-tools
+    - gem install coveralls-lcov
+    - source /opt/ros/$ROS_DISTRO/setup.bash
+    # Setup rosdep
+    - rosdep init
+    - rosdep update
+    # Create workspace.
+    - mkdir -p ~/catkin_ws/src
+    # Install dependencies
+    - cd ~/catkin_ws/
+    - rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+    # Install latest gmock
+    - mkdir ~/local
+    - cd ~/local
+    - git clone https://github.com/google/googletest.git
+    - cd ~/local/googletest
+    - mkdir mybuild
+    - cd ~/local/googletest/mybuild
+    - cmake ..
+    - make
+    - make install
+    # Build
+    - cd ~/catkin_ws
+    - catkin init
+    - catkin build --cmake-args -DCAFFE_INSTALL_DIR="" -DCUDA_INSTALL_DIR=""
 
-before_script:
-  - echo ROS_CI_COVERAGE >> .ci_config/industrial_ci/src/docker.env
-  - echo COVERALLS_REPO_TOKEN >> .ci_config/industrial_ci/src/docker.env
-  - echo TRAVIS_JOB_ID >> .ci_config/industrial_ci/src/docker.env
-
+# Command to run tests
+# --------------------
 script:
-  - source .ci_config/travis.sh
-  - .industrial_ci/travis.sh
-#after_success:
-#  - cd ~/catkin_ws/build
-#  - lcov --directory . --capture --output-file coverage.info
-#  - lcov --remove coverage.info '/opt/*' '/usr/*'  --output-file coverage.info
-#  - lcov --list coverage.info
-#  - coveralls-lcov  coverage.info
-  #- coveralls-lcov --repo-token ${COVERALLS_REPO_TOKEN} coverage.info
+    # Download test data
+    - source ~/catkin_ws/devel/setup.bash --extend
+    - cd ~/catkin_ws/src/rapid/rapid_perception/scripts
+    - ./download_test_data.sh
+    - cd ~/catkin_ws
+    - catkin build --cmake-args -DCAFFE_INSTALL_DIR="" -DCUDA_INSTALL_DIR="" --catkin-make-args run_tests -- rapid --no-deps
+
+# Generate code coverage, other artifacts
+# ---------------------------------------
+after_success:
+    - cd ~/catkin_ws/build
+    - lcov --directory . --capture --output-file coverage.info
+    - lcov --remove coverage.info '/opt/*' '/usr/*' '*/devel/*' '*test_*' '*_test*' --output-file coverage.info
+    - lcov --list coverage.info
+    - coveralls-lcov coverage.info
