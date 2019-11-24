@@ -18,13 +18,13 @@ before_install: # Use this to prepare the system to install prerequisites or dep
 # --------------------------------
 install:
     # Install ROS
-    - sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-    - apt-get update -qq
-    - apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin ros-$ROS_DISTRO-ros lcov python-catkin-tools
+    - sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin ros-$ROS_DISTRO-ros lcov python-catkin-tools
     - gem install coveralls-lcov
     - source /opt/ros/$ROS_DISTRO/setup.bash
     # Setup rosdep
-    - rosdep init
+    - sudo rosdep init
     - rosdep update
     # Create workspace.
     - mkdir -p ~/catkin_ws/src
